@@ -5,7 +5,9 @@ ConTeXt format writer
 ConTeXt is a TeX format, see www.contextgarden.net
 """
 from __future__ import unicode_literals
+from __future__ import absolute_import
 from .abc import Writer
+from ..context import remove_empty_elements, fix_footnotes, fix_spaces
 import re
 import base64
 import logging
@@ -38,16 +40,6 @@ CTXMAP = {
     'img': ('%% \\imgdata', ''),
     'span': ('{', '}'),
 }
-
-LANG = 'en'
-
-QUOTEMAP = {
-    'en' : '“”‘’',
-    'de' : '„“̦‘',
-}
-QUOTES = QUOTEMAP[LANG]
-reDOUBLEQUOTE = re.compile(QUOTES[0] + '([\w\s]+)' + QUOTES[1], re.I|re.U)
-reSINGLEQUOTE = re.compile(QUOTES[2] + '([\w\s]+)' + QUOTES[3], re.I|re.U)
 
 
 class ConTeXtWriter(Writer):
@@ -91,17 +83,20 @@ class ConTeXtWriter(Writer):
         self._fragments.append(html)
 
     def as_string(self):
-        return "".join(self._fragments)
+        context = "".join(self._fragments)
+        context = remove_empty_elements(context)
+        context = fix_footnotes(context)
+        context = fix_spaces(context)
+        return context
+
+
 
 def _escape_context(text):
     for c in '\\{}$&%|':
         text = text.replace(c, '\\'+c)
     text = text.replace(' ', ' ')
     text = text.replace('--', '–') # always?
-    for m in reSINGLEQUOTE.finditer(text):
-        text = text.replace(m.group(0), r'\quote{' + m.group(1) + '}')
-    for m in reDOUBLEQUOTE.finditer(text):
-        text = text.replace(m.group(0), r'\quotation{' + m.group(1) + '}')
+    text = text.replace('...', '…') # always?
     for m in re.finditer(r'\s+"(.*?)"\s+', text, re.U|re.M):
         text = text.replace(m.group(0), r' \quotation{' + m.group(1) + '} ')
     for m in re.finditer(r'‘(.*?)’', text, re.U|re.M):
