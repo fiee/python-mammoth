@@ -30,6 +30,10 @@ CTXMAP = {
     'ol' : ('\\startitemize[1]\n', '\\stopitemize\n'),
     'ul' : ('\\startitemize[n]\n', '\\stopitemize\n'),
     'li' : ('\\startitem\n', '\n\\stopitem\n'),
+# dl was used only for comments
+#    'dl' : ('', ''),
+#    'dt' : ('\\startdescr{', '}'), # you must define descr
+#    'dd' : ('', '\\stopdescr'), # works only if dd follows dt
     'a' : ('\\goto{', '}'),
     'footnote' : ('\\footnote{','}'),
     'br' : ('\\crlf ',''),
@@ -39,6 +43,7 @@ CTXMAP = {
     'h4' : ('\\startsubsubsection[]\n', '\n\\stopsubsubsection\n\n'),
     'img': ('%% \\imgdata', ''),
     'span': ('{', '}'),
+    'q': ('\\startquotation\n', '\n\\stopquotation\n\n')
 }
 
 
@@ -92,8 +97,10 @@ class ConTeXtWriter(Writer):
 
 
 def _escape_context(text):
-    for c in '\\{}$&%|':
+    for c in '\\{}|':
         text = text.replace(c, '\\'+c)
+    for c in '$&%':
+        text = text.replace(c, '\\%s{}' % c)
     text = text.replace(' ', ' ')
     text = text.replace('--', '–') # always?
     text = text.replace('...', '…') # always?
