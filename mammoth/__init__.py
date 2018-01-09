@@ -16,6 +16,10 @@ def convert_to_markdown(*args, **kwargs):
     return convert(*args, output_format="markdown", **kwargs)
 
 
+def convert_to_context(*args, **kwargs):
+    return convert(*args, output_format="context", **kwargs)
+
+
 def convert(fileobj, transform_document=None, id_prefix=None, include_embedded_style_map=_undefined, **kwargs):
     if include_embedded_style_map is _undefined:
         include_embedded_style_map = True
@@ -32,7 +36,7 @@ def convert(fileobj, transform_document=None, id_prefix=None, include_embedded_s
             )
         )
     )
-    
+
 
 def extract_raw_text(fileobj):
     return docx.read(fileobj).map(extract_raw_text_from_element)
