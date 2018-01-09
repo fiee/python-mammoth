@@ -106,6 +106,18 @@ For instance:
 Markdown support is still in its early stages,
 so you may find some features are unsupported.
 
+#### ConTeXt
+
+Using `--output-format=context` lets Mammoth generate ConTeXt (MkIV) code.
+(ConTeXt is a TeX format, see http://wiki.contextgarden.net.)
+For instance:
+
+    mammoth document.docx --output-format=context
+
+ConTeXt support is quite limited, but it can handle enumerations,
+simple tables, quotes and even footnotes. "Everything" gets delimited
+with start-stop-pairs, suitable for Tagged PDF.
+
 ### Library
 
 #### Basic conversion
@@ -306,6 +318,12 @@ Converts the source document to HTML.
 Converts the source document to Markdown.
 This behaves the same as `convert_to_html`,
 except that the `value` property of the result contains Markdown rather than HTML.
+
+#### `mammoth.convert_to_context(fileobj, **kwargs)`
+
+Converts the source document to ConTeXt.
+This behaves the same as `convert_to_html`,
+except that the `value` property of the result contains ConTeXt rather than HTML.
 
 #### `mammoth.extract_raw_text(fileobj)`
 
